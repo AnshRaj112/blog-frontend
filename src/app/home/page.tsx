@@ -2,81 +2,88 @@
 
 import { useEffect, useState } from 'react';
 import BlogCard from '../components/BlogCard/BlogCard';
+import BlogModal from '../components/BlogModal/BlogModal';
 import SearchBar from '../components/SearchBar/SearchBar';
-import styles from './Home.module.scss';
+import FilterBar from '../components/FilterBar/FilterBar';
+import axios from 'axios';
 
-interface Blog {
+type Blog = {
   _id: string;
   title: string;
   description: string;
-  thumbnail: string;
+  thumbnail?: string;
   tags: string[];
-}
+  slug: string;
+  views: number;
+  createdAt: string;
+};
 
 export default function Home() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+  const [search, setSearch] = useState('');
+  const [tag, setTag] = useState('');
+  const [sort, setSort] = useState('');
+  const [allTags, setAllTags] = useState<string[]>([]);
 
-  const fetchBlogs = async (query = '', pageNumber = 1) => {
+  useEffect(() => {
+    fetchBlogs();
+  }, [search, tag, sort]);
+
+  const fetchBlogs = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/blogs?search=${query}&page=${pageNumber}&limit=15`
-      );
-      const data = await res.json();
-      setBlogs(data);
-      setHasMore(data.length === 15); // If we get 15, maybe there's more
+      let url = `http://localhost:5000/blogs?page=1`;
+
+      if (search) url += `&title=${search}`;
+      if (tag) url += `&tag=${tag}`;
+      if (sort) {
+        const [field, order] = sort.split('-');
+        url += `&sort=${field}&order=${order}`;
+      }
+
+      const res = await axios.get(url);
+      setBlogs(res.data.blogs || []);
+      const tagsFromBlogs = new Set(res.data.blogs.flatMap((b: Blog) => b.tags));
+      setAllTags([...tagsFromBlogs]);
     } catch (err) {
-      console.error('Failed to fetch blogs:', err);
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchBlogs(searchQuery, page);
-  }, [searchQuery, page]);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setPage(1); // Reset to first page when new search is triggered
-  };
-
-  const handlePrevPage = () => {
-    if (page > 1) setPage((prev) => prev - 1);
-  };
-
-  const handleNextPage = () => {
-    if (hasMore) setPage((prev) => prev + 1);
-  };
-
   return (
-    <div className={styles.container}>
-      <SearchBar onSearch={handleSearch} />
+    <main style={{ padding: '2rem' }}>
+      <h1>Latest Blogs</h1>
+      <SearchBar onSearch={setSearch} />
+      <FilterBar
+        tags={allTags}
+        selectedTag={tag}
+        sort={sort}
+        onTagChange={setTag}
+        onSortChange={setSort}
+      />
 
-      <div className={styles.grid}>
-        {blogs.map((blog: Blog) => (
-          <BlogCard
-            key={blog._id}
-            id={blog._id}
-            title={blog.title}
-            description={blog.description}
-            thumbnail={blog.thumbnail}
-            tags={blog.tags}
-            onReadMore={() => console.log("Read more clicked", blog._id)}
-            onReadBlog={() => console.log("Read blog clicked", blog._id)}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        blogs.map((blog) => (
+          <div key={blog._id} onClick={() => setSelectedBlog(blog)}>
+            <BlogCard {...blog} />
+          </div>
+        ))
+      )}
 
-      <div className={styles.pagination}>
-        <button onClick={handlePrevPage} disabled={page === 1}>
-          ← Prev
-        </button>
-        <span>Page {page}</span>
-        <button onClick={handleNextPage} disabled={!hasMore}>
-          Next →
-        </button>
-      </div>
-    </div>
+      <BlogModal
+        isOpen={!!selectedBlog}
+        onClose={() => setSelectedBlog(null)}
+        title={selectedBlog?.title || ''}
+        description={selectedBlog?.description || ''}
+        tags={selectedBlog?.tags || []}
+        slug={selectedBlog?.slug || ''}
+      />
+    </main>
   );
 }

@@ -1,0 +1,49 @@
+.blogPage {
+    padding: 2rem;
+  }
+  
+  .blogContainer {
+    max-width: 800px;
+    margin: auto;
+  
+    h1 {
+      margin-bottom: 1rem;
+    }
+  
+    .thumbnail {
+      width: 100%;
+      height: auto;
+      margin-bottom: 1.5rem;
+      border-radius: 6px;
+    }
+  
+    .content {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+  
+    .tags {
+      margin-top: 1rem;
+  
+      .tag {
+        display: inline-block;
+        background: #eee;
+        padding: 4px 10px;
+        border-radius: 4px;
+        margin-right: 6px;
+        font-size: 0.85rem;
+      }
+    }
+  }
+  
+  .recentSection {
+    margin-top: 4rem;
+    border-top: 1px solid #ccc;
+    padding-top: 2rem;
+  
+    h2 {
+      margin-bottom: 1rem;
+    }
+  }
+  

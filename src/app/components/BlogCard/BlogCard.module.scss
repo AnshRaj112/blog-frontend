@@ -1,78 +1,31 @@
 .card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    transition: transform 0.2s;
-    border: 1px solid #eee;
+  }
   
-    &:hover {
-      transform: translateY(-4px);
-    }
+  .thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+  }
   
-    .thumbnail {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
+  .tags {
+    margin: 0.5rem 0;
+  }
   
-    .content {
-      padding: 16px;
-  
-      .title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-  
-      .description {
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: #444;
-  
-        .readMore {
-          color: #0070f3;
-          font-weight: 500;
-          cursor: pointer;
-          margin-left: 4px;
-  
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
-  
-      .readButton {
-        margin-top: 12px;
-        padding: 8px 16px;
-        background-color: #0070f3;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: background-color 0.2s;
-  
-        &:hover {
-          background-color: #005ad1;
-        }
-      }
-  
-      .tags {
-        margin-top: 14px;
-  
-        .tag {
-          display: inline-block;
-          margin-right: 8px;
-          background-color: #f0f0f0;
-          padding: 4px 10px;
-          border-radius: 16px;
-          font-size: 0.8rem;
-          color: #555;
-        }
-      }
-    }
+  .tag {
+    display: inline-block;
+    background-color: #eee;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 0.85rem;
   }
   

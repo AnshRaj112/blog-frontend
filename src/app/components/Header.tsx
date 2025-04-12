@@ -1,27 +1,28 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+// import { useCallback } from "react";
 import Link from "next/link";
-import { FaBars } from "react-icons/fa";
-import { RxCross2 } from "react-icons/rx";
-import { motion, AnimatePresence } from "framer-motion";
+// import { FaBars } from "react-icons/fa";
+// import { RxCross2 } from "react-icons/rx";
+// import { motion, AnimatePresence } from "framer-motion";
 import styles from "./styles/Header.module.scss";
 
 const Header: React.FC = () => {
   const [scrolling, setScrolling] = useState<boolean>(false);
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+//   const [menuOpen, setMenuOpen] = useState<boolean>(false);
+//   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Track screen width
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 770);
-    };
+//   useEffect(() => {
+//     const handleResize = () => {
+//       setIsMobile(window.innerWidth < 770);
+//     };
 
-    handleResize(); // Set initial state
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+//     handleResize(); // Set initial state
+//     window.addEventListener("resize", handleResize);
+//     return () => window.removeEventListener("resize", handleResize);
+//   }, []);
 
   // Handle Scroll Effect
   useEffect(() => {
@@ -34,21 +35,21 @@ const Header: React.FC = () => {
   }, []);
 
   // Lock/Unlock Scrolling when Menu Opens
-  useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
+//   useEffect(() => {
+//     document.body.style.overflow = menuOpen ? "hidden" : "";
+//     return () => {
+//       document.body.style.overflow = "";
+//     };
+//   }, [menuOpen]);
 
   // Smooth Scroll to Section
-  const handleNavigation = useCallback((id: string) => {
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-    setMenuOpen(false);
-  }, []);
+//   const handleNavigation = useCallback((id: string) => {
+//     const section = document.getElementById(id);
+//     if (section) {
+//       section.scrollIntoView({ behavior: "smooth" });
+//     }
+//     setMenuOpen(false);
+//   }, []);
 
   // Inline styles when header is scrolled
   const getHeaderStyle = () => {

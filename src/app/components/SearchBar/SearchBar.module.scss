@@ -1,19 +1,23 @@
-.searchWrapper {
+.searchBar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: 0.5rem;
+    border: 1px solid #ccc;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 1rem;
   
-    .searchIcon {
-      color: #aaa;
+    input {
+      border: none;
+      flex: 1;
+      font-size: 1rem;
+      outline: none;
     }
   
-    .searchInput {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
+    svg {
+      font-size: 1.2rem;
     }
   }
   

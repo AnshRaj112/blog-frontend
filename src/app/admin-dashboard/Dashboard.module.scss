@@ -1,0 +1,28 @@
+.dashboard {
+    padding: 2rem;
+  
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+  
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+  
+      th, td {
+        padding: 0.75rem 1rem;
+        border: 1px solid #ccc;
+      }
+  
+      th {
+        background: #f0f0f0;
+      }
+  
+      button {
+        margin-right: 0.5rem;
+        padding: 0.4rem 0.7rem;
+        cursor: pointer;
+      }
+    }
+  }
+  

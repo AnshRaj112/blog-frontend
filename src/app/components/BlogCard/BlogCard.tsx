@@ -1,52 +1,30 @@
+import React from 'react';
 import styles from './BlogCard.module.scss';
+import { useRouter } from 'next/router';
 
-interface BlogCardProps {
-  id: string;
+type BlogCardProps = {
+  _id: string;
   title: string;
   description: string;
-  thumbnail: string;
+  thumbnail?: string;
   tags: string[];
-  onReadMore: (id: string) => void;
-  onReadBlog: (id: string) => void;
-}
+  slug: string;
+};
 
-const BlogCard: React.FC<BlogCardProps> = ({
-  id,
-  title,
-  description,
-  thumbnail,
-  tags,
-  onReadMore,
-  onReadBlog
-}) => {
-  const truncated = description.length > 200;
+const BlogCard: React.FC<BlogCardProps> = ({ title, description, thumbnail, tags, slug }) => {
+  const router = useRouter();
 
   return (
     <div className={styles.card}>
-      <img src={thumbnail} alt={title} className={styles.thumbnail} />
-      
-      <div className={styles.content}>
-        <h3 className={styles.title}>{title}</h3>
-
-        <p className={styles.description}>
-          {truncated ? (
-            <>
-              {description.slice(0, 200)}...
-              <span className={styles.readMore} onClick={() => onReadMore(id)}> Read more</span>
-            </>
-          ) : description}
-        </p>
-
-        <button className={styles.readButton} onClick={() => onReadBlog(id)}>
-          Read Blog
-        </button>
-
-        <div className={styles.tags}>
-          {tags.map((tag, i) => (
-            <span key={i} className={styles.tag}>#{tag}</span>
-          ))}
-        </div>
+      {thumbnail && <img src={thumbnail} alt={title} className={styles.thumbnail} />}
+      <h3>{title}</h3>
+      <p>{description.slice(0, 150)}...</p>
+      <div className={styles.tags}>
+        {tags.map((tag) => (
+          <span key={tag} className={styles.tag}>#{tag}</span>
+        ))}
       </div>
+      <button onClick={() => router.push(`/blog/${slug}`)}>Read Blog</button>
     </div>
   );
 };
