@@ -1,0 +1,19 @@
+.searchWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  
+    .searchIcon {
+      color: #aaa;
+    }
+  
+    .searchInput {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+  }
+  
