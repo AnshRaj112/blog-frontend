@@ -1,5 +1,3 @@
-// pages/admin-dashboard/editor.tsx
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,6 +6,7 @@ import dynamic from "next/dynamic";
 import styles from "./Editor.module.scss";
 import TagSelector from "../components/TagSelector/TagSelector";
 import axios from "axios";
+import { toast } from "react-hot-toast";  // Add toast for user feedback
 import 'react-quill/dist/quill.snow.css';
 
 // Dynamically import react-quill because it uses window
@@ -21,6 +20,7 @@ export default function EditorPage() {
 
   const [content, setContent] = useState<string>("");
   const [showTagSelector, setShowTagSelector] = useState(false);
+  const [loading, setLoading] = useState(false);  // Loading state for better UX
 
   useEffect(() => {
     if (blogId) {
@@ -29,39 +29,52 @@ export default function EditorPage() {
   }, [blogId]);
 
   const fetchExistingContent = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/admin/blog/${blogId}`, {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/blog/${blogId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setContent(res.data.content || "");
     } catch (err) {
       console.error("Error loading existing blog content", err);
+      toast.error("Failed to load blog content.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDone = () => {
+    if (content.trim() === "") {
+      toast.error("Content cannot be empty!");
+      return;
+    }
     setShowTagSelector(true);
   };
 
   const handleTagSubmit = async (tags: string[]) => {
+    setLoading(true);
     try {
+      // Save the blog content
       await axios.post(
-        "http://localhost:5000/admin/blog/content",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/blog/content`,
         { blogId, content },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // Save the tags
       await axios.post(
-        "http://localhost:5000/admin/blog/tags",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/blog/tags`,
         { blogId, tags },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert("Blog saved successfully!");
+      toast.success("Blog saved successfully!");
       router.push("/admin-dashboard");
     } catch (err) {
       console.error("Error saving blog", err);
-      alert("Something went wrong.");
+      toast.error("Something went wrong while saving the blog.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,10 +82,12 @@ export default function EditorPage() {
     <div className={styles.editorPage}>
       <h1>Edit Blog Content</h1>
 
+      {loading && <div className={styles.loading}>Loading...</div>}
+
       <ReactQuill
         value={content}
         onChange={setContent}
-        placeholder="Paste your content from Google Docs here..."
+        placeholder="Start typing your content here..."
         className={styles.editor}
         theme="snow"
         modules={{
@@ -81,12 +96,15 @@ export default function EditorPage() {
             ["bold", "italic", "underline", "strike"],
             [{ list: "ordered" }, { list: "bullet" }],
             ["link", "image"],
-            ["clean"],
+            [{ align: [] }],
+            [{ color: [] }, { background: [] }],
+            ["blockquote"],
+            ["clean"], // To clear the editor content
           ],
         }}
       />
 
-      <button onClick={handleDone} className={styles.doneButton}>
+      <button onClick={handleDone} className={styles.doneButton} disabled={loading}>
         Done
       </button>
 

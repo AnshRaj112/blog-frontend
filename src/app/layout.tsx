@@ -1,5 +1,6 @@
 import './globals.css';
 import 'react-quill/dist/quill.snow.css';
+import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({
   children,
@@ -8,6 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <Toaster position="bottom-right" />
       <body>{children}</body>
     </html>
   );

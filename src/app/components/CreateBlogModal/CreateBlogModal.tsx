@@ -1,8 +1,7 @@
-// components/CreateBlogModal.tsx
-
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
+import Image from "next/image";
 import styles from "./CreateBlogModal.module.scss";
 import { useRouter } from "next/router";
 
@@ -31,16 +30,26 @@ export default function CreateBlogModal({ onClose }: { onClose: () => void }) {
       return;
     }
 
-    // Store in localStorage or pass via query to editor step
     localStorage.setItem("newBlogMeta", JSON.stringify({ title, shortDesc }));
 
     if (thumbnail) {
-      localStorage.setItem("newBlogThumbnail", JSON.stringify(thumbnail.name)); // actual file will be uploaded in backend step
+      localStorage.setItem("newBlogThumbnailName", thumbnail.name);
+      localStorage.setItem("newBlogThumbnailPreview", preview ?? "");
     }
 
     onClose();
     router.push("/admin-dashboard/editor");
   };
+
+  // Reset state on unmount
+  useEffect(() => {
+    return () => {
+      setTitle("");
+      setShortDesc("");
+      setThumbnail(null);
+      setPreview(null);
+    };
+  }, []);
 
   return (
     <div className={styles.modalOverlay}>
@@ -52,23 +61,44 @@ export default function CreateBlogModal({ onClose }: { onClose: () => void }) {
           placeholder="Blog Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          aria-label="Blog Title"
         />
 
         <textarea
           placeholder="Short Description"
           value={shortDesc}
           onChange={(e) => setShortDesc(e.target.value)}
+          aria-label="Short Description"
         />
 
         <div className={styles.thumbnailUpload}>
           <label htmlFor="thumb">Thumbnail (optional):</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          {preview && <img src={preview} alt="Preview" className={styles.preview} />}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            aria-label="Upload Thumbnail"
+          />
+          {preview && (
+            <div className={styles.previewWrapper}>
+              <Image
+                src={preview}
+                alt="Thumbnail Preview"
+                width={300}
+                height={180}
+                className={styles.preview}
+              />
+            </div>
+          )}
         </div>
 
         <div className={styles.actions}>
-          <button onClick={onClose}>Cancel</button>
-          <button onClick={handleNext}>Next</button>
+          <button onClick={onClose} className={styles.cancelBtn}>
+            Cancel
+          </button>
+          <button onClick={handleNext} className={styles.nextBtn}>
+            Next
+          </button>
         </div>
       </div>
     </div>

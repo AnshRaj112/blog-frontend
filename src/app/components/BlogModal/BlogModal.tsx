@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import React from 'react';
-import styles from './BlogModal.module.scss';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import styles from "./BlogModal.module.scss";
+import { useRouter } from "next/navigation";
 
 type BlogModalProps = {
   isOpen: boolean;
@@ -47,7 +47,13 @@ const BlogModal: React.FC<BlogModalProps> = ({
             </span>
           ))}
         </div>
-        <button className={styles.readMore} onClick={() => router.push(`/blog/${slug}`)}>
+        <button
+          className={styles.readButton}
+          onClick={(e) => {
+            e.stopPropagation(); // prevents opening modal
+            router.push(`/blog/${slug}`);
+          }}
+        >
           Read Blog
         </button>
       </div>
