@@ -3,14 +3,17 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import Image from "next/image";
 import styles from "./CreateBlogModal.module.scss";
-import { useRouter } from "next/navigation"; 
 
-export default function CreateBlogModal({ onClose }: { onClose: () => void }) {
+type CreateBlogModalProps = {
+  onClose: () => void;
+  onBlogCreated: () => void;
+};
+
+export default function CreateBlogModal({ onClose, onBlogCreated }: CreateBlogModalProps) {
   const [title, setTitle] = useState("");
   const [shortDesc, setShortDesc] = useState("");
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -38,10 +41,9 @@ export default function CreateBlogModal({ onClose }: { onClose: () => void }) {
     }
 
     onClose();
-    router.push("/admin-dashboard/editor");
+    onBlogCreated(); // Let parent handle navigation
   };
 
-  // Reset state on unmount
   useEffect(() => {
     return () => {
       setTitle("");

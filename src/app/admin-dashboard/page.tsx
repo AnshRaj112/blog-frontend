@@ -22,7 +22,8 @@ export default function AdminDashboard() {
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const router = useRouter();
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -69,7 +70,9 @@ export default function AdminDashboard() {
   };
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this blog?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this blog?"
+    );
     if (!confirmDelete) return;
 
     setProcessingId(id);
@@ -95,7 +98,10 @@ export default function AdminDashboard() {
     <div className={styles.dashboard}>
       <h1>Admin Dashboard</h1>
 
-      <button onClick={() => setShowCreateModal(true)} className={styles.createButton}>
+      <button
+        onClick={() => setShowCreateModal(true)}
+        className={styles.createButton}
+      >
         + Create Blog
       </button>
 
@@ -146,9 +152,9 @@ export default function AdminDashboard() {
       {showCreateModal && (
         <CreateBlogModal
           onClose={() => setShowCreateModal(false)}
-          onBlogCreated={(id) => {
+          onBlogCreated={() => {
             setShowCreateModal(false);
-            router.push(`/admin-dashboard/editor?id=${id}`);
+            router.push("/admin-dashboard/editor");
           }}
         />
       )}
