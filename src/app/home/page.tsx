@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -21,51 +21,57 @@ type Blog = {
 };
 
 export default function Home() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]); // Initialize with empty array
   const [loading, setLoading] = useState(true);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [search, setSearch] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);  // For storing selected tags
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sort, setSort] = useState('');
-  const [allTags, setAllTags] = useState<string[]>([]); // Store all unique tags for the filter bar
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-  // Fetch blogs when search, selectedTags or sort changes
+  // ✅ Fetch predefined tags on first load
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await axios.get(`${baseURL}/api/tags`);
+        setAllTags(res.data);
+      } catch (err) {
+        console.error('Error fetching tags:', err);
+      }
+    };
+
+    fetchTags();
+  }, []);
+
+  // ✅ Fetch blogs when filters/search/page change
   useEffect(() => {
     fetchBlogs();
-  }, [search, selectedTags, sort]);
+  }, [search, selectedTags, sort, page]);
 
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      let url = `${baseURL}/blogs?page=1`;
+      let url = `${baseURL}/api/blogs?page=${page}&limit=15`;
 
-      // If a search query exists, append it to the URL
       if (search) url += `&title=${search}`;
-
-      // If tags are selected, append them to the URL
       if (selectedTags.length > 0) {
         selectedTags.forEach((tag) => {
           url += `&tag=${tag}`;
         });
       }
-
-      // If sorting is selected, append it to the URL
       if (sort) {
         const [field, order] = sort.split('-');
         url += `&sort=${field}&order=${order}`;
       }
 
       const res = await axios.get(url);
-      setBlogs(res.data.blogs || []);
-
-      // Extract unique tags from the fetched blogs and set them in the state
-      const tagsFromBlogs = new Set<string>();
-      res.data.blogs.forEach((b: Blog) => {
-        b.tags.forEach((tag) => tagsFromBlogs.add(tag));
-      });
-      setAllTags(Array.from(tagsFromBlogs));  // Store tags for the filter bar
+      const blogsData = res.data.blogs || []; // Ensure it defaults to an empty array
+      setBlogs(blogsData);
+      setTotalPages(res.data.totalPages || 1); // Assuming your backend returns this
     } catch (err) {
       console.error('Error fetching blogs:', err);
     } finally {
@@ -85,19 +91,16 @@ export default function Home() {
 
       <h1 style={{ marginBottom: '1rem' }}>Latest Blogs</h1>
 
-      {/* Search Bar */}
       <SearchBar onSearch={setSearch} />
 
-      {/* Filter Bar */}
       <FilterBar
         selectedTags={selectedTags}
         sort={sort}
         onTagsChange={setSelectedTags}
         onSortChange={setSort}
-        availableTags={allTags}  // Pass availableTags to FilterBar
+        availableTags={allTags} // ✅ Now using predefined tags
       />
 
-      {/* Loading State */}
       {loading ? (
         <div style={{ textAlign: 'center', marginTop: '3rem' }}>
           <IoReload className="spinner" size={32} />
@@ -105,13 +108,16 @@ export default function Home() {
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '1.5rem', marginTop: '2rem' }}>
-          {blogs.map((blog) => (
-            <BlogCard key={blog._id} {...blog} />
-          ))}
+          {Array.isArray(blogs) && blogs.length > 0 ? (
+            blogs.map((blog) => (
+              <BlogCard key={blog._id} {...blog} />
+            ))
+          ) : (
+            <p>No blogs available.</p>
+          )}
         </div>
       )}
 
-      {/* Modal for viewing individual blog */}
       <BlogModal
         isOpen={!!selectedBlog}
         onClose={() => setSelectedBlog(null)}
@@ -120,6 +126,27 @@ export default function Home() {
         tags={selectedBlog?.tags || []}
         slug={selectedBlog?.slug || ''}
       />
+
+      {/* Pagination Component */}
+      <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
+          <button
+            key={pg}
+            onClick={() => setPage(pg)}
+            style={{
+              margin: '0 5px',
+              padding: '0.5rem 1rem',
+              backgroundColor: pg === page ? '#333' : '#eee',
+              color: pg === page ? '#fff' : '#000',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            {pg}
+          </button>
+        ))}
+      </div>
     </main>
   );
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from 'react';
 import styles from './BlogCard.module.scss';
@@ -8,9 +8,9 @@ import { SlCalender } from "react-icons/sl";
 type BlogCardProps = {
   _id: string;
   title: string;
-  description: string;
+  description?: string;
   thumbnail?: string;
-  tags: string[];
+  tags?: string[];
   slug: string;
   views: number;
   createdAt: string;
@@ -19,9 +19,9 @@ type BlogCardProps = {
 
 const BlogCard: React.FC<BlogCardProps> = ({
   title,
-  description,
+  description = '',
   thumbnail,
-  tags,
+  tags = [],
   views,
   createdAt,
   onClick,
@@ -50,7 +50,10 @@ const BlogCard: React.FC<BlogCardProps> = ({
             <FaEye style={{ marginRight: '5px' }} />
             {views} views
           </span>
-          <span className={styles.date}><SlCalender /> {formattedDate}</span>
+          <span className={styles.date}>
+            <SlCalender style={{ marginRight: '5px' }} />
+            {formattedDate}
+          </span>
         </div>
 
         <div className={styles.tags}>

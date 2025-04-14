@@ -1,23 +1,29 @@
 "use client";
 
-// components/FilterBar/FilterBar.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './FilterBar.module.scss';
-import { IoFilterOutline } from 'react-icons/io5';
+import { IoFilterOutline, IoChevronDown } from 'react-icons/io5';
 
 type Props = {
   selectedTags: string[];
   sort: string;
   onTagsChange: (tags: string[]) => void;
   onSortChange: (sort: string) => void;
-  availableTags: string[]; // Add the availableTags prop
+  availableTags: string[];
 };
 
-const FilterBar: React.FC<Props> = ({ selectedTags, sort, onTagsChange, onSortChange, availableTags }) => {
-  // Handle changes in tag selection
+const FilterBar: React.FC<Props> = ({
+  selectedTags,
+  sort,
+  onTagsChange,
+  onSortChange,
+  availableTags,
+}) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const handleTagChange = (tag: string) => {
     const newSelectedTags = selectedTags.includes(tag)
-      ? selectedTags.filter(t => t !== tag)
+      ? selectedTags.filter((t) => t !== tag)
       : [...selectedTags, tag];
     onTagsChange(newSelectedTags);
   };
@@ -26,25 +32,29 @@ const FilterBar: React.FC<Props> = ({ selectedTags, sort, onTagsChange, onSortCh
     <div className={styles.filterBar}>
       <IoFilterOutline />
 
-      {/* Tag Filters (Multiple Select) */}
-      <div className={styles.tagSelector}>
-        <label>Tags</label>
-        <div className={styles.tags}>
-          {availableTags.map((tag) => (
-            <div key={tag} className={styles.tagOption}>
-              <input
-                type="checkbox"
-                id={tag}
-                checked={selectedTags.includes(tag)}
-                onChange={() => handleTagChange(tag)}
-              />
-              <label htmlFor={tag}>{tag}</label>
-            </div>
-          ))}
-        </div>
+      {/* Tag Dropdown */}
+      <div className={styles.tagDropdown}>
+        <label onClick={() => setShowDropdown(!showDropdown)}>
+          Tags <IoChevronDown />
+        </label>
+        {showDropdown && (
+          <div className={styles.dropdownMenu}>
+            {availableTags.map((tag) => (
+              <div key={tag} className={styles.tagOption}>
+                <input
+                  type="checkbox"
+                  id={`tag-${tag}`}
+                  checked={selectedTags.includes(tag)}
+                  onChange={() => handleTagChange(tag)}
+                />
+                <label htmlFor={`tag-${tag}`}>{tag}</label>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Sorting Options */}
+      {/* Sort Selector */}
       <div className={styles.sortSelector}>
         <label>Sort By</label>
         <select value={sort} onChange={(e) => onSortChange(e.target.value)}>
