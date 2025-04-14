@@ -3,7 +3,7 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import Image from "next/image";
 import styles from "./CreateBlogModal.module.scss";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; 
 
 export default function CreateBlogModal({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState("");

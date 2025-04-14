@@ -9,8 +9,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Toaster position="bottom-right" />
-      <body>{children}</body>
+      <body>
+        <Toaster position="bottom-right" />
+        {children}
+      </body>
     </html>
   );
 }

@@ -2,10 +2,10 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import styles from "./Dashboard.module.scss";
 import CreateBlogModal from "../components/CreateBlogModal/CreateBlogModal";
-import toast from "react-hot-toast"; // Optional: Enable if you add react-hot-toast
+import toast from "react-hot-toast";
 
 type Blog = {
   _id: string;
@@ -20,10 +20,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
+
   const router = useRouter();
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     if (!token) {
@@ -32,12 +33,12 @@ export default function AdminDashboard() {
     }
 
     fetchBlogs();
-  }, []);
+  }, [token]);
 
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/admin/blogs`, {
+      const res = await axios.get(`${API_URL}/api/blogs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setBlogs(res.data.blogs);
@@ -53,7 +54,7 @@ export default function AdminDashboard() {
     setProcessingId(id);
     try {
       await axios.patch(
-        `${API_BASE_URL}/admin/blog/${id}/visibility`,
+        `${API_URL}/api/blogs/${id}/visibility`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -73,7 +74,7 @@ export default function AdminDashboard() {
 
     setProcessingId(id);
     try {
-      await axios.delete(`${API_BASE_URL}/admin/blog/${id}`, {
+      await axios.delete(`${API_URL}/api/blogs/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchBlogs();
@@ -142,7 +143,15 @@ export default function AdminDashboard() {
         </table>
       )}
 
-      {showCreateModal && <CreateBlogModal onClose={() => setShowCreateModal(false)} />}
+      {showCreateModal && (
+        <CreateBlogModal
+          onClose={() => setShowCreateModal(false)}
+          onBlogCreated={(id) => {
+            setShowCreateModal(false);
+            router.push(`/admin-dashboard/editor?id=${id}`);
+          }}
+        />
+      )}
     </div>
   );
 }

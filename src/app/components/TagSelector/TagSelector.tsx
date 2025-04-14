@@ -14,10 +14,12 @@ export default function TagSelector({
   const [tags, setTags] = useState<string[]>([]); // State to store fetched tags
 
   useEffect(() => {
-    // Fetch tags from the backend on component mount
     const fetchTags = async () => {
       try {
-        const response = await axios.get("/api/tags");
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/tags`
+        );
+        console.log(response.data); // Log the tags to the console
         setTags(response.data); // Store fetched tags in state
       } catch (err) {
         console.error("Error fetching tags:", err);
@@ -42,7 +44,9 @@ export default function TagSelector({
             tags.map((tag) => (
               <button
                 key={tag}
-                className={`${styles.tagButton} ${selected.includes(tag) ? styles.selected : ""}`}
+                className={`${styles.tagButton} ${
+                  selected.includes(tag) ? styles.selected : ""
+                }`}
                 onClick={() => toggleTag(tag)}
               >
                 {tag}
@@ -57,7 +61,10 @@ export default function TagSelector({
           <button onClick={onCancel} className={styles.cancelButton}>
             Cancel
           </button>
-          <button onClick={() => onSubmit(selected)} className={styles.submitButton}>
+          <button
+            onClick={() => onSubmit(selected)}
+            className={styles.submitButton}
+          >
             Submit
           </button>
         </div>
